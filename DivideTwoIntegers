@@ -1,0 +1,54 @@
+public class Solution {
+    public int divide(int dividend, int divisor) {
+        // Edge case: overflow condition
+        if (dividend == Integer.MIN_VALUE && divisor == -1) {
+            return Integer.MAX_VALUE; // To avoid overflow
+        }
+
+        // Determine the sign of the result
+        boolean negative = (dividend < 0) != (divisor < 0);
+
+        // Work with absolute values to simplify logic
+        long absDividend = Math.abs((long) dividend);
+        long absDivisor = Math.abs((long) divisor);
+
+        long quotient = 0;
+
+        // Repeated subtraction (with optimization using bit shifting)
+        while (absDividend >= absDivisor) {
+            long tempDivisor = absDivisor, multiple = 1;
+
+            // Double the divisor and multiple until it exceeds the dividend
+            while (absDividend >= (tempDivisor << 1)) {
+                tempDivisor <<= 1;
+                multiple <<= 1;
+            }
+
+            // Subtract the largest doubled divisor from the dividend
+            absDividend -= tempDivisor;
+            quotient += multiple;
+        }
+
+        // If the result should be negative, negate the quotient
+        if (negative) {
+            quotient = -quotient;
+        }
+
+        // Ensure the result is within the 32-bit signed integer range
+        if (quotient < Integer.MIN_VALUE) {
+            return Integer.MIN_VALUE;
+        } else if (quotient > Integer.MAX_VALUE) {
+            return Integer.MAX_VALUE;
+        }
+
+        return (int) quotient;
+    }
+
+    public static void main(String[] args) {
+        Solution solution = new Solution();
+        int dividend = 10;
+        int divisor = 3;
+        int result = solution.divide(dividend, divisor);
+        System.out.println("Result of division: " + result);
+    }
+}
